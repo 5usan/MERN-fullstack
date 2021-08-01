@@ -14,17 +14,24 @@ const router = express.Router();
 
 router.post("/post", async (req, res) => {
   try {
+    // const signupData = {
+    //   username: req.body.username,
+    //   name: req.body.name,
+    //   address: req.body.address,
+    //   phone_number: req.body.phone_number,
+    //   password: await bcrypt.hash(req.body.password, 10)
+    // };
+
+    //Using Deconstructuring
+    const {username, name, address, phone_number, password} = req.body;
     const signupData = {
-      username: req.body.username,
-      name: req.body.name,
-      address: req.body.address,
-      phone_number: req.body.phone_number,
-      password: await bcrypt.hash(req.body.password, 10)
-    };
-    const {password} = req.body;
+      username,
+      name,
+      address,
+      phone_number, 
+      password: await bcrypt.hash(password, 10)
+    }
     console.log(password);
-    const hashedValue = await bcrypt.hash(signupData.password, 10);
-    console.log(hashedValue);
     const newUser = await create(signupSchema, signupData);
     console.log(newUser);
     res.status(200).json({ newUser });
