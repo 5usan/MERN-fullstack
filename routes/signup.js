@@ -1,4 +1,5 @@
-const express = require("express");
+const express = require("express"); //package
+const bcrypt = require("bcryptjs"); //package
 const signupSchema = require("../models/signupModel");
 const {
   create,
@@ -6,20 +7,31 @@ const {
   readOne,
   update,
   destroy,
-  destroyMany
+  destroyMany,
 } = require("../CURD operations/basicCURD");
 
 const router = express.Router();
 
 router.post("/post", async (req, res) => {
-    try {
-      const newUser = await create(signupSchema, req.body);
-      console.log(newUser);
-      res.status(200).json({ newUser });
-    } catch (err) {
-      res.status(400).json({ msg: "Something went wrong" });
-    }
-  });
+  try {
+    const signupData = {
+      username: req.body.username,
+      name: req.body.name,
+      address: req.body.address,
+      phone_number: req.body.phone_number,
+      password: await bcrypt.hash(req.body.password, 10)
+    };
+    const {password} = req.body;
+    console.log(password);
+    const hashedValue = await bcrypt.hash(signupData.password, 10);
+    console.log(hashedValue);
+    const newUser = await create(signupSchema, signupData);
+    console.log(newUser);
+    res.status(200).json({ newUser });
+  } catch (err) {
+    res.status(400).json({ msg: "Something went wrong" });
+  }
+});
 
 router.get("/get", async (req, res) => {
   try {
@@ -78,15 +90,14 @@ router.delete("/delete/name/:name", async (req, res) => {
   }
 });
 
-router.delete('/delete/:id', async (req, res) => {
-    const id = req.params.id;
-    try{
-        const getUserById = await destroy(signupSchema, id);
-        res.status(200).json({ deleteduser: getUserById });
-
-    }catch(err) {
-        res.status(400).json({msg: err.message});
-    }
-}); 
+router.delete("/delete/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const getUserById = await destroy(signupSchema, id);
+    res.status(200).json({ deleteduser: getUserById });
+  } catch (err) {
+    res.status(400).json({ msg: err.message });
+  }
+});
 
 module.exports = router;

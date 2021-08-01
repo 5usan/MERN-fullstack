@@ -1,5 +1,8 @@
-const express = require("express");
-const mongoose = require("mongoose");
+const express = require("express"); //package
+const mongoose = require("mongoose"); //package
+const multer = require('multer'); //package
+
+var upload = multer({ dest: 'uploads/'});
 
 const signup = require('./routes/signup');
 const dashboard = require('./routes/dashboard');
@@ -35,3 +38,6 @@ app.listen(port, () => {
 
 app.use('/signup', signup);
 app.use('/dashboard', dashboard);
+app.post('/demo', upload.single('image'), (req, res) => {
+  console.log(req.body);
+});
