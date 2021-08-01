@@ -1,18 +1,21 @@
 const express = require("express");
 const signupSchema = require("../models/signupModel");
+const {
+  create,
+  readAll,
+  readOne,
+  update,
+  destroy,
+  destroyMany
+} = require("../CURD operations/basicCURD");
 
 const router = express.Router();
 
 router.post("/post", async (req, res) => {
     try {
-      const newUser = new signupSchema(req.body);
+      const newUser = await create(signupSchema, req.body);
       console.log(newUser);
-      const isCreated = await newUser.save();
-      if (isCreated) {
-        res.status(200).json({ User: isCreated });
-      } else {
-        res.status(400).json({ msg: "New user is not created" });
-      }
+      res.status(200).json({ newUser });
     } catch (err) {
       res.status(400).json({ msg: "Something went wrong" });
     }
@@ -20,7 +23,7 @@ router.post("/post", async (req, res) => {
 
 router.get("/get", async (req, res) => {
   try {
-    const getAllUsers = await signupSchema.find();
+    const getAllUsers = await readAll(signupSchema);
     res.status(200).json({ Alluser: getAllUsers });
   } catch (err) {
     res.status(400).json({ msg: "Something went wrong" });
@@ -30,7 +33,7 @@ router.get("/get", async (req, res) => {
 router.get("/get/:id", async (req, res) => {
   const id = req.params.id;
   try {
-    const getUserById = await signupSchema.findById({ _id: id });
+    const getUserById = await readOne(signupSchema, id);
     res.status(200).json({ requestedUser: getUserById });
   } catch (err) {
     res.status(400).json({ msg: "Something went wrong " });
@@ -65,10 +68,10 @@ router.patch("/update/:id", async (req, res) => {
   }
 });
 
-router.delete("/delete/:name", async (req, res) => {
+router.delete("/delete/name/:name", async (req, res) => {
   const name = req.params.name;
   try {
-    const getUserByName = await signupSchema.deleteMany({ name: name });
+    const getUserByName = await destroyMany(signupSchema, name);
     res.status(400).json({ deletedusers: getUserByName });
   } catch (err) {
     res.status(400).json({ msg: err.message });
@@ -78,12 +81,12 @@ router.delete("/delete/:name", async (req, res) => {
 router.delete('/delete/:id', async (req, res) => {
     const id = req.params.id;
     try{
-        const getUserById = await signupSchema.findByIdAndDelete({_id: id});
-        res.status(400).json({ deleteduser: getUserById });
+        const getUserById = await destroy(signupSchema, id);
+        res.status(200).json({ deleteduser: getUserById });
 
     }catch(err) {
         res.status(400).json({msg: err.message});
     }
-});
+}); 
 
 module.exports = router;
