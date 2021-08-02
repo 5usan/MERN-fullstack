@@ -2,7 +2,16 @@ const express = require("express"); //package
 const mongoose = require("mongoose"); //package
 const multer = require('multer'); //package
 
-var upload = multer({ dest: 'uploads/'});
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './images')  //null means bug free
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + file.originalname) //filename is set according to date
+  }
+});
+
+var upload = multer({ storage: storage });
 
 const signup = require('./routes/signup');
 const dashboard = require('./routes/dashboard');
@@ -37,7 +46,9 @@ app.listen(port, () => {
 });
 
 app.use('/signup', signup);
+
 app.use('/dashboard', dashboard);
+
 app.post('/demo', upload.single('image'), (req, res) => {
   console.log(req.body);
 });
