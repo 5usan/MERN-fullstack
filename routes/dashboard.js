@@ -1,4 +1,5 @@
 const express = require("express");
+const multer = require('multer');
 const dashboardSchema = require("../models/dashboardModel");
 const {
   create,
@@ -7,12 +8,20 @@ const {
   update,
   destroy
 } = require("../CURD operations/basicCURD");
+const {upload} = require('../Utilities/uploadFiles');
 
 const router = express.Router();
 
-router.post("/post", async (req, res) => {
+router.post("/post", upload.single('image'), async (req, res) =>{ 
+  const {title, description, user, image} = req.body;
+  const dasdboardData = {
+    title, 
+    description,
+    user,
+    image: req.file.path
+  }
   try {
-    const newDashboard = await create(dashboardSchema, req.body);
+    const newDashboard = await create(dashboardSchema, dasdboardData);
     console.log(newDashboard);
     res.status(200).json({ newDashboard });
   } catch (err) {
@@ -99,6 +108,6 @@ router.delete("/delete/:id", async (req, res) => {
   } catch (err) {
     res.status(400).json({ msg: err.message });
   }
-});
+})
 
 module.exports = router;

@@ -12,7 +12,7 @@ const create = async (dataSchema, params) => {
 
 const readAll = async (dataSchema) => {
   try {
-    const getData = await dataSchema.find();
+    const getData = await dataSchema.find().populate("user");
     return getData;
   } catch (err) {
     return {};
