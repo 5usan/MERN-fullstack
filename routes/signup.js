@@ -1,6 +1,7 @@
 const express = require("express"); //package
 const bcrypt = require("bcryptjs"); //package
 const signupSchema = require("../models/signupModel");
+const verify = require("../tokenVerification");
 const {
   create,
   readAll,
@@ -9,6 +10,7 @@ const {
   destroy,
   destroyMany,
 } = require("../CURD operations/basicCURD");
+const { findOne } = require("../models/signupModel");
 
 const router = express.Router();
 
@@ -23,27 +25,31 @@ router.post("/post", async (req, res) => {
     // };
 
     //Using Deconstructuring
-    const {username, name, address, phone_number, password} = req.body;
+    const { username, name, address, phone_number, password } = req.body;
     const signupData = {
       username,
       name,
       address,
-      phone_number, 
-      password: await bcrypt.hash(password, 10)
+      phone_number,
+      password: await bcrypt.hashSync(password, 10),
+    };
+    const isUserAvailable = await signupSchema.findOne({username : username});
+    if (isUserAvailable) { 
+      console.log("User available");
+    } else {
+      const newUser = await create(signupSchema, signupData);
+      console.log(newUser);
+      res.status(200).json({ msg: "Signup Successful!!!" });
     }
-    console.log(password);
-    const newUser = await create(signupSchema, signupData);
-    console.log(newUser);
-    res.status(200).json({ newUser });
   } catch (err) {
     res.status(400).json({ msg: "Something went wrong" });
   }
 });
 
-router.get("/get", async (req, res) => {
-  try {
+router.get("/get", verify, async (req, res) => {
+    try {
     const getAllUsers = await readAll(signupSchema);
-    res.status(200).json({ Alluser: getAllUsers });
+    res.status(200).json({ getAllUsers });
   } catch (err) {
     res.status(400).json({ msg: "Something went wrong" });
   }

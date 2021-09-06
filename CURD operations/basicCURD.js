@@ -1,4 +1,5 @@
 const express = require("express");
+const dateFormat = require("dateformat");
 
 const create = async (dataSchema, params) => {
   try {
@@ -22,6 +23,9 @@ const readAll = async (dataSchema) => {
 const readOne = async (dataSchema, params) => {
   try {
     const getData = await dataSchema.findById({ _id: params });
+    const createdDate = getData.createdAt;
+    const requiredDate = dateFormat(createdDate, "paddedShortDate");
+    console.log(requiredDate);
     return getData;
   } catch (err) {
     return {};

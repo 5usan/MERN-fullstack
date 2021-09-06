@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const signupSchema = new mongoose.Schema({
     username:{
         type: String,
-        require: false
+        require: false,
     },
 
     name:{
@@ -25,6 +25,6 @@ const signupSchema = new mongoose.Schema({
         type: String,
         require: false
     }
-});
+}, {timestamps: true});
 
 module.exports = mongoose.model('signup', signupSchema);

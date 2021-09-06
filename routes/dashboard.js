@@ -1,5 +1,4 @@
 const express = require("express");
-const multer = require('multer');
 const dashboardSchema = require("../models/dashboardModel");
 const {
   create,
@@ -13,6 +12,7 @@ const {upload} = require('../Utilities/uploadFiles');
 const router = express.Router();
 
 router.post("/post", upload.single('image'), async (req, res) =>{ 
+  //Using Deconstructuring
   const {title, description, user, image} = req.body;
   const dasdboardData = {
     title, 

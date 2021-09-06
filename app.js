@@ -1,10 +1,15 @@
 const express = require("express"); //package
 const mongoose = require("mongoose"); //package
+const {dateConvertor1} = require("date_convertor");
+const date = dateConvertor1();
+const cors = require('cors');
 
-//var upload = multer({ storage: storage });
+console.log(date, "Date");
 
 const signup = require('./routes/signup');
 const dashboard = require('./routes/dashboard');
+const login = require('./routes/login');
+
 
 
 const url =
@@ -13,6 +18,7 @@ const port = 4002;
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 mongoose.connect(
   url,
@@ -35,7 +41,9 @@ app.listen(port, () => {
   }
 });
 
-app.use('/signup', signup);
+app.use('/signup', signup); 
 
 app.use('/dashboard', dashboard);
+
+app.use('/login', login);
 
